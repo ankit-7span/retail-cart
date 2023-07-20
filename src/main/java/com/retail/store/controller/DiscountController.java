@@ -14,12 +14,12 @@ public class DiscountController {
     private final DiscountService discountService;
 
     @Autowired
-    public DiscountController(DiscountService discountService) {
+    public DiscountController(final DiscountService discountService) {
         this.discountService = discountService;
     }
-    
+
     @PostMapping("/calculateNetPayableAmount")
-    public NetAmount calculateNetPayableAmount(@RequestBody Bill bill) {
+    public NetAmount calculateNetPayableAmount(@RequestBody final Bill bill) {
         return discountService.calculateNetPayableAmount(bill);
     }
 }

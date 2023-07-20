@@ -5,11 +5,14 @@ import com.retail.store.modal.NetAmount;
 import com.retail.store.service.DiscountService;
 import org.springframework.stereotype.Service;
 
+/**
+ * Implementation of the DiscountService interface that calculates discounts and net payable amount for a bill.
+ */
 @Service
 public class DiscountServiceImpl implements DiscountService {
 
     @Override
-    public NetAmount calculateNetPayableAmount(Bill bill) {
+    public NetAmount calculateNetPayableAmount(final Bill bill) {
         try {
             double discount = 0;
             if (!bill.isGroceries()) {
@@ -19,14 +22,21 @@ public class DiscountServiceImpl implements DiscountService {
                 }
             }
             discount = calculateDiscountOnTotalAmount(bill, discount);
-            double netPayableAmount = bill.amount() - discount;
+            final var netPayableAmount = bill.amount() - discount;
             return new NetAmount(Math.max(netPayableAmount, 0));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static double calculateDiscountOnTotalAmount(Bill bill, double discount) {
+    /**
+     * Calculates the additional discount based on the total bill amount.
+     *
+     * @param bill     The Bill object representing the user's purchase details.
+     * @param discount The current discount amount calculated from other factors.
+     * @return The updated discount amount with additional discount based on the total bill amount.
+     */
+    private static double calculateDiscountOnTotalAmount(final Bill bill, double discount) {
         if (bill.amount() > 100) {
             discount += (bill.amount() / 100) * 5;
         }
@@ -34,13 +44,13 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     /**
-     * Apply percentage-based discounts here
+     * Calculate the percentage-based discount for the given bill based on the user's role.
      *
-     * @param bill
-     * @return
+     * @param bill The Bill object representing the user's purchase details.
+     * @return The percentage-based discount amount.
      */
-    private double calculatePercentageBasedDiscount(Bill bill) {
-        Double totalAmount = bill.amount();
+    private double calculatePercentageBasedDiscount(final Bill bill) {
+        final var totalAmount = bill.amount();
         double discount = 0;
         switch (bill.user().roleEnum()) {
             case EMPLOYEE -> discount = totalAmount * 0.3;
@@ -50,13 +60,13 @@ public class DiscountServiceImpl implements DiscountService {
     }
 
     /**
-     * Apply years-based discount here
+     * Calculate the years-based discount for the given bill based on the customer's duration.
      *
-     * @param bill
-     * @return
+     * @param bill The Bill object representing the user's purchase details.
+     * @return The years-based discount amount.
      */
-    private double calculateYearsBasedDiscount(Bill bill) {
-        Double totalAmount = bill.amount();
+    private double calculateYearsBasedDiscount(final Bill bill) {
+        final var totalAmount = bill.amount();
         double discount = 0;
         // Check user's customer duration and apply the discount if applicable
         if (bill.user().isCustomerOverTwoYears()) {
